@@ -6,7 +6,7 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get()
-  async getHello(): Promise <string> {
-    return await this.chatService.chat();
+  getStationWithBikes() {
+    return this.chatService.chat();
   }
 }
