@@ -8,15 +8,7 @@ export class ChatService {
   constructor(private readonly gbfsService: GbfsService, 
     private readonly groqService: GroqService) {}
     
-  async chat() {
-
-    const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [{
-    role: 'system',
-    content: 'Du bist ein hilfreicher KI-Assistent',
-    },{
-    role: 'user',
-    content: 'Wo gibt es noch ein Fahrrad?',
-    }]
+  async chat(messages: Groq.Chat.Completions.ChatCompletionMessageParam[]) {
     
     const toolCall = await this.groqService.generateText(messages)
     console.log(toolCall);
