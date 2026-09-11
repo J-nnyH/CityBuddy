@@ -1,0 +1,10 @@
+<h1>CityBuddy &#128690;</h1>
+<div class="messages">
+  @for(message of messages(); track $index){
+    <div [class]="message.role">
+      <p>{{message.message}}</p>
+    </div>
+  }
+</div>
+<textarea #input name="" id="input"></textarea>
+<button (click)="chatRequest(input.value)">Ask your CityBuddy</button>
