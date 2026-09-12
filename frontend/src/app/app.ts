@@ -1,9 +1,10 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ChatService } from './chat.service';
+import { MarkdownComponent } from 'ngx-markdown';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, MarkdownComponent],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
