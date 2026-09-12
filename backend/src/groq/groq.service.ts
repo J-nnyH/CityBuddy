@@ -21,10 +21,7 @@ export class GroqService {
         tools: tools
       });
 
-      console.log(JSON.stringify(response.choices[0].message, null, 2));
-
     return response.choices[0].message || 'Keine Antwort.';
-      // return response.choices?.[0]?.message?.content || 'Keine Antwort.';
     } catch (error) {
       console.error('Groq Fehler:', error);
       throw new Error('KI-Anfrage fehlgeschlagen');

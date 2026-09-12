@@ -7,7 +7,6 @@ export class ChatController {
 
   @Post()
   getStationWithBikes(@Body() body:any) {
-    console.log(body)
     return this.chatService.chat(body.messages);
   }
 }

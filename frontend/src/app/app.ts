@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { ChatService } from './chat.service';
 
 @Component({
   imports: [RouterOutlet],
@@ -8,12 +9,27 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
 })
 export class App {
+  private chatService = inject(ChatService)
   messages = signal(
-    [{role:'buddy', message:'Hi! Was kann ich für dich tun?'}
+    [{role:'assistant', content:'Hi! Was kann ich für dich tun?'}
     ]
   )
-
+  isLoading = signal(false)
   chatRequest(message: string){
-    this.messages.update(prev=> [...prev, {role:"user", message: message}])
+    this.messages.update(prev=> [...prev, {role:"user", content: message}])
+    this.isLoading.set(true)
+    this.chatService.sendMessage(this.messages()).subscribe({
+      next: response => {
+        console.log(response);
+        this.messages.update(prev=> [...prev, {role: response.role, content:response.content}]);
+        this.isLoading.set(false)
+        },
+      error: error => {
+        console.error(error)
+        this.isLoading.set(false) 
+      }
+
+    }
+  ) 
   }
 }

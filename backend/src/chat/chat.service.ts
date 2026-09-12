@@ -10,32 +10,37 @@ export class ChatService {
     
   async chat(messages: Groq.Chat.Completions.ChatCompletionMessageParam[]) {
     
-    const toolCall = await this.groqService.generateText(messages)
-    console.log(toolCall);
+    const response = await this.groqService.generateText(messages)
 
-    const functionName = toolCall.tool_calls?.[0].function.name;
+    //falls kein tool gewählt wird, direkt llm antwort responden
+    if(!response.tool_calls?.length){
+      return response
+    }
 
-    const argumentsString = toolCall.tool_calls?.[0].function.arguments;
+    const functionName = response.tool_calls?.[0].function.name;
+
+    const argumentsString = response.tool_calls?.[0].function.arguments;
     const args = JSON.parse(argumentsString!);
 
-    console.log(functionName, args.minNumOfBikes);
 
     if (functionName === 'getStationsWithBikes') {
       const stationsWithBikes = await this.gbfsService.getStationsWithBikes(
         args.minNumOfBikes,
       );
-      messages.push(toolCall);
+      messages.push(response);
 
       messages.push({
       role: 'tool',
-      tool_call_id: toolCall.tool_calls![0].id,
+      tool_call_id: response.tool_calls![0].id,
       content: JSON.stringify(stationsWithBikes),
       });
-      console.log(toolCall.tool_calls![0]);
 
       const finalResponse = await this.groqService.generateText(messages);
 
       return finalResponse;
-    } else return 'Kein passendes Tool gefunden'
+    } else return {
+    role: 'assistant',
+    content: 'Ich konnte dafür gerade kein passendes Tool finden.'
+  };
   }
 }

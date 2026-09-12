@@ -1,0 +1,140 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  background: #f5f7fa;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin: 0 0 30px;
+  font-size: 2rem;
+  color: #222;
+}
+
+.messages {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.messages p {
+  margin: 0;
+}
+
+/* Allgemeine Nachricht */
+.user,
+.assistant {
+  max-width: 70%;
+  padding: 12px 16px;
+  border-radius: 20px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* User rechts */
+.user {
+  align-self: flex-end;
+  background: #222;
+  color: white;
+  border-bottom-right-radius: 5px;
+}
+
+/* CityBuddy links */
+.assistant {
+  align-self: flex-start;
+  background: white;
+  color: #222;
+  border: 1px solid #e1e4e8;
+  border-bottom-left-radius: 0px;
+}
+
+
+/* Eingabebereich */
+textarea {
+  width: 100%;
+  max-width: 700px;
+  min-height: 80px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  resize: vertical;
+
+  border: 1px solid #d5d9de;
+  border-radius: 14px;
+  background: white;
+
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #777;
+}
+
+/* Button */
+button {
+  margin-top: 12px;
+  padding: 10px 18px;
+
+  border: 1px solid  #0a274d;
+  border-radius: 8px;
+
+  background: white;
+  color:  #0a274d;
+
+  font: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+button:hover {
+  background: #0a274d;
+  color: white;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+/* Loading-Dots */
+.dots {
+  display: inline-flex;
+  margin-left: 2px;
+}
+
+.dots span {
+  opacity: 0;
+  animation: dot 1.4s infinite;
+}
+
+.dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot {
+  0%,
+  20% {
+    opacity: 0;
+  }
+
+  40%,
+  100% {
+    opacity: 1;
+  }
+}

@@ -2,9 +2,19 @@
 <div class="messages">
   @for(message of messages(); track $index){
     <div [class]="message.role">
-      <p>{{message.message}}</p>
+      <p>{{message.content}}</p>
+    </div>
+  }
+  @if(isLoading()){
+        <div class="assistant">
+      <p>Ich prüfe das kurz<span class="dots">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </span>
+      </p>
     </div>
   }
 </div>
-<textarea #input name="" id="input"></textarea>
-<button (click)="chatRequest(input.value)">Ask your CityBuddy</button>
+<textarea #input name="" id="input" placeholder="Tippe hier deine Frage."></textarea>
+<button (click)="chatRequest(input.value)">Frag CityBuddy</button>
