@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GbfsService {
-  async getStationsWithBikes(minNumOfBikes: number): Promise<any[]> {
+  private async getStations() {
     const [statusResponse, infoResponse] = await Promise.all([
       fetch('https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_kg/de/station_status.json'),
       fetch('https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_kg/de/station_information.json')
@@ -11,23 +11,51 @@ export class GbfsService {
     const statusData = await statusResponse.json();
     const infoData = await infoResponse.json();
 
-    const liveStations = statusData.data.stations;
-    const infoStations = infoData.data.stations;
+    return infoData.data.stations.map((infoStation: any) => {
+      const matchedStatus = statusData.data.stations.find(
+        (station: any) => station.station_id === infoStation.station_id
+      );
 
-    const activeStations = liveStations
-      .filter((station: any) => station.num_bikes_available >= minNumOfBikes)
-      .map((liveStation: any) => {
-        const matchingInfo = infoStations.find(
-          (info: any) => info.station_id === liveStation.station_id,
-        );
-
+      return {
+        stationId: infoStation.station_id,
+        name: infoStation.name,
+        bikesAvailable: matchedStatus?.num_bikes_available ?? 0,
+        docksAvailable: matchedStatus?.num_docks_available,
+      };
+    });
+  } 
+  async getStationsWithBikes(minNumOfBikes: number): Promise<any[]> {
+    const stations = await this.getStations()
+    const stationsWithBikes = stations
+      .filter((station: any) => station.bikesAvailable >= minNumOfBikes)
+      .map((station: any) => {
         return {
-          stationId: liveStation.station_id,
-          name: matchingInfo?.name ?? `Station ${liveStation.station_id}`,
-          bikesAvailable: liveStation.num_bikes_available,
+          stationId: station.stationId,
+          name:  station.name,
+          bikesAvailable: station.bikesAvailable,
         };
       });
+    return stationsWithBikes;
+  }
 
-    return activeStations;
+  async getStationsWithFreeDocks(minNumOfDocks: number) {
+  const stations = await this.getStations();
+
+  return stations
+    .filter((station: any) => station.docksAvailable >= minNumOfDocks)
+    .map((station: any) => ({
+      stationId: station.stationId,
+      name: station.name,
+      docksAvailable: station.docksAvailable,
+    }));
+}
+
+  async getStationStatus(stationName: string) {
+    const stations = await this.getStations();
+
+    return stations.filter(
+      (station: any) =>
+        station.name.toLowerCase().includes(stationName.toLowerCase())
+    );
   }
 }
