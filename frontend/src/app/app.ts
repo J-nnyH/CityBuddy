@@ -22,15 +22,19 @@ export class App {
 
     this.messages.update(prev=> [...prev, {role:"user", content: trimmedMessage}])
     this.isLoading.set(true)
-    
+
     this.chatService.sendMessage(this.messages()).subscribe({
       next: response => {
-        console.log(response);
-        this.messages.update(prev=> [...prev, {role: response.role, content:response.content}]);
+        this.messages.update(prev=> [...prev, {
+          role: response.role, 
+          content:response.content}]);
         this.isLoading.set(false)
         },
       error: error => {
         console.error(error)
+        this.messages.update(prev => [...prev, {
+          role: "assistant", 
+          content: 'Die Anfrage konnte nicht verarbeitet werden.' }])
         this.isLoading.set(false) 
       }
 

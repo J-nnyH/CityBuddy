@@ -33,27 +33,52 @@ async chat(
 
     for (const toolCall of response.tool_calls) {
       const functionName = toolCall.function.name;
-      const args = JSON.parse(toolCall.function.arguments);
-
+      let args;
       let toolResult;
 
-      if (functionName === 'getStationsWithBikes') {
-        toolResult = await this.gbfsService.getStationsWithBikes(
-          args.minNumOfBikes,
-        );
-      } else if (functionName === 'getStationsWithFreeDocks') {
-        toolResult = await this.gbfsService.getStationsWithFreeDocks(
-          args.minNumOfDocks,
-        );
-      } else if (functionName === 'getStationStatus') {
-        toolResult = await this.gbfsService.getStationStatus(
-          args.stationName,
-        );
-      } else {
+      // Ungültiges JSON soll nicht den gesamten Chat-Request abbrechen.
+      try {
+        args = JSON.parse(toolCall.function.arguments);
+      } catch {
         toolResult = {
-          error: 'Unbekanntes Tool',
+          error: 'Ungültige Tool-Argumente',
+        };
+
+        messages.push({
+          role: 'tool',
+          tool_call_id: toolCall.id,
+          content: JSON.stringify(toolResult),
+        });
+
+        continue;
+      }
+
+      // Fehler bei der Tool-Ausführung sollen nicht den gesamten Chat-Request abbrechen.
+
+      try{
+        if (functionName === 'getStationsWithBikes') {
+          toolResult = await this.gbfsService.getStationsWithBikes(
+            args.minNumOfBikes,
+        );
+        } else if (functionName === 'getStationsWithFreeDocks') {
+          toolResult = await this.gbfsService.getStationsWithFreeDocks(
+            args.minNumOfDocks,
+        );
+        } else if (functionName === 'getStationStatus') {
+          toolResult = await this.gbfsService.getStationStatus(
+            args.stationName,
+        );
+        } else {
+          toolResult = {
+            error: 'Unbekanntes Tool',
+        };
+        }
+      } catch {
+        toolResult = {
+          error: 'Die Stationsdaten konnten nicht abgerufen werden.',
         };
       }
+
 
       messages.push({
         role: 'tool',
@@ -63,6 +88,10 @@ async chat(
     }
 
     response = await this.groqService.generateText(messages);
+  }
+
+  if (response.tool_calls?.length) {
+  throw new Error('Maximale Anzahl an Tool-Runden erreicht');
   }
 
   return response;
