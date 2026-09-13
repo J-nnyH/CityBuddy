@@ -17,8 +17,12 @@ export class App {
   )
   isLoading = signal(false)
   chatRequest(message: string){
-    this.messages.update(prev=> [...prev, {role:"user", content: message}])
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
+
+    this.messages.update(prev=> [...prev, {role:"user", content: trimmedMessage}])
     this.isLoading.set(true)
+    
     this.chatService.sendMessage(this.messages()).subscribe({
       next: response => {
         console.log(response);
