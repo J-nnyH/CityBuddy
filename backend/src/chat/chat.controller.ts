@@ -1,12 +1,18 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import Groq from 'groq-sdk';
 
-@Controller("chat")
+@Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post()
-  getStationWithBikes(@Body() body:any) {
+  chat(
+    @Body()
+    body: {
+      messages: Groq.Chat.Completions.ChatCompletionMessageParam[];
+    },
+  ) {
     return this.chatService.chat(body.messages);
   }
 }

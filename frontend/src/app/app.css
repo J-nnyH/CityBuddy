@@ -55,11 +55,58 @@ h1 {
   border-bottom-left-radius: 0px;
 }
 
+.prompt-suggestions {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.prompt-chip {
+  padding: 8px 12px;
+  border: 1px solid #d5d9de;
+  border-radius: 999px;
+  background: #fff;
+  color: #0a274d;
+  font-size: 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: promptFadeIn 1s ease forwards;
+}
+
+.prompt-chip:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.prompt-chip:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.prompt-chip:hover {
+  background: #eef4ff;
+}
+
+@keyframes promptFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.composer {
+  width: 100%;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 /* Eingabebereich */
 textarea {
   width: 100%;
-  max-width: 700px;
   min-height: 80px;
   padding: 14px 16px;
   box-sizing: border-box;
@@ -80,14 +127,14 @@ textarea:focus {
 
 /* Button */
 button {
-  margin-top: 12px;
+  align-self: flex-end;
   padding: 10px 18px;
 
-  border: 1px solid  #0a274d;
+  border: 1px solid #0a274d;
   border-radius: 8px;
 
   background: white;
-  color:  #0a274d;
+  color: #0a274d;
 
   font: inherit;
   font-weight: 600;
@@ -96,12 +143,17 @@ button {
   transition: all 0.15s ease;
 }
 
-button:hover {
+button:hover:not(:disabled) {
   background: #0a274d;
   color: white;
 }
 
-button:active {
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:active:not(:disabled) {
   transform: translateY(1px);
 }
 /* Loading-Dots */

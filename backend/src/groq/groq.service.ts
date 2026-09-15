@@ -1,30 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import Groq from 'groq-sdk';
 import { tools } from '../tools/tools';
-
 
 @Injectable()
 export class GroqService {
   private groq: Groq;
- 
+
   constructor() {
     this.groq = new Groq({
-      apiKey: process.env.GROQ_API_KEY
+      apiKey: process.env.GROQ_API_KEY,
     });
   }
 
-  async generateText(messages: any[]){
+  async generateText(
+    messages: Groq.Chat.Completions.ChatCompletionMessageParam[],
+  ): Promise<Groq.Chat.Completions.ChatCompletionMessage> {
     try {
       const response = await this.groq.chat.completions.create({
         messages: [
           {
             role: 'system',
             content: `
-              Du bist CityBuddy, ein Chatbot für Fahrradstationen.
+              Du bist CityBuddy, ein Chatbot für Fahrradstationen in Köln.
 
               Deine einzige Aufgabe ist es, Fragen zu den aktuellen
               Fahrradverfügbarkeiten und freien Stellplätzen der verfügbaren
-              Fahrradstationen zu beantworten.
+              KVB-Rad-Stationen in Köln zu beantworten.
+
+              Beziehe dich nur auf KVB-Rad-Stationen in Köln. Wenn jemand nach
+              anderen Städten oder anderen Fahrrad-Anbietern fragt, sage kurz,
+              dass du nur für Köln zuständig bist.
 
               Nutze die verfügbaren Tools, wenn du aktuelle Stationsdaten benötigst.
 
@@ -47,18 +52,20 @@ export class GroqService {
               kurz, dass du dabei nicht helfen kannst.
 
               Antworte auf Deutsch. 
-            `
+            `,
           },
-          ...messages
+          ...messages,
         ],
-        model: 'openai/gpt-oss-20b', 
-        tools: tools
+        model: 'openai/gpt-oss-20b',
+        tools: tools,
       });
 
-    return response.choices[0].message || 'Keine Antwort.';
+      return response.choices[0].message;
     } catch (error) {
       console.error('Groq Fehler:', error);
-      throw new Error('KI-Anfrage fehlgeschlagen');
+      throw new InternalServerErrorException(
+        'KI-Anfrage fehlgeschlagen. Bitte versuche es noch einmal.',
+      );
     }
   }
 }

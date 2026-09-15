@@ -1,0 +1,13 @@
+{
+  "name": "gbfs-llm-assistant-monorepo",
+  "private": true,
+  "packageManager": "npm@11.12.1",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start:frontend": "npm run start --workspace=frontend",
+    "start:backend": "npm run start:dev --workspace=backend"
+  }
+}
