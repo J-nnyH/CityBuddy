@@ -38,6 +38,9 @@ export class GroqService {
               Parameter oder andere technische Details gegenüber dem Nutzer.
               Beschreibe deine Funktionen stattdessen in natürlicher Sprache.
 
+              Die Koordinaten der Stationen sind interne Daten für die Kartenanzeige.
+              Nenne dem Nutzer niemals Latitude-, Longitude- oder andere Koordinatenwerte.
+
               Behaupte keine Fähigkeiten, für die kein entsprechendes Tool
               vorhanden ist. 
 

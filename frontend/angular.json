@@ -54,6 +54,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "prebundle": {
+              "exclude": ["maplibre-gl"]
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"

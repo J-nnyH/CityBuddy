@@ -3,6 +3,8 @@ import { Injectable } from '@nestjs/common';
 interface GbfsStationInfo {
   station_id: string;
   name: string;
+  lat: number;
+  lon: number;
 }
 
 interface GbfsStationStatus {
@@ -16,18 +18,8 @@ interface Station {
   name: string;
   bikesAvailable: number;
   docksAvailable: number;
-}
-
-interface StationWithBikes {
-  stationId: string;
-  name: string;
-  bikesAvailable: number;
-}
-
-interface StationWithFreeDocks {
-  stationId: string;
-  name: string;
-  docksAvailable: number;
+  latitude: number;
+  longitude: number;
 }
 
 @Injectable()
@@ -60,37 +52,24 @@ export class GbfsService {
         name: infoStation.name,
         bikesAvailable: matchedStatus?.num_bikes_available ?? 0,
         docksAvailable: matchedStatus?.num_docks_available ?? 0,
+        latitude: infoStation.lat,
+        longitude: infoStation.lon,
       };
     });
   }
-  async getStationsWithBikes(
-    minNumOfBikes: number,
-  ): Promise<StationWithBikes[]> {
+  async getStationsWithBikes(minNumOfBikes: number): Promise<Station[]> {
     const stations = await this.getStations();
-    const stationsWithBikes = stations
-      .filter((station) => station.bikesAvailable >= minNumOfBikes)
-      .map((station) => {
-        return {
-          stationId: station.stationId,
-          name: station.name,
-          bikesAvailable: station.bikesAvailable,
-        };
-      });
-    return stationsWithBikes;
+    return stations.filter(
+      (station) => station.bikesAvailable >= minNumOfBikes,
+    );
   }
 
-  async getStationsWithFreeDocks(
-    minNumOfDocks: number,
-  ): Promise<StationWithFreeDocks[]> {
+  async getStationsWithFreeDocks(minNumOfDocks: number): Promise<Station[]> {
     const stations = await this.getStations();
 
-    return stations
-      .filter((station) => station.docksAvailable >= minNumOfDocks)
-      .map((station) => ({
-        stationId: station.stationId,
-        name: station.name,
-        docksAvailable: station.docksAvailable,
-      }));
+    return stations.filter(
+      (station) => station.docksAvailable >= minNumOfDocks,
+    );
   }
 
   async getStationStatus(stationName: string): Promise<Station[]> {

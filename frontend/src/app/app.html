@@ -19,6 +19,10 @@
   }
 </div>
 
+@if (stations().length > 0) {
+  <app-map [stations]="stations()"></app-map>
+}
+
 <div class="prompt-suggestions" aria-label="Fragenvorschläge">
   @for (prompt of suggestionPrompts; track prompt) {
     <button type="button" class="prompt-chip" (click)="chatRequest(prompt)">

@@ -9,6 +9,21 @@ type ToolArgs = {
   stationName?: string;
 };
 
+type MapStation = {
+  stationId: string;
+  name: string;
+  bikesAvailable: number;
+  docksAvailable: number;
+  latitude: number;
+  longitude: number;
+};
+
+type ChatResponse = {
+  role: 'assistant';
+  content: string;
+  stations: MapStation[];
+};
+
 @Injectable()
 export class ChatService {
   constructor(
@@ -18,19 +33,20 @@ export class ChatService {
 
   async chat(
     messages: Groq.Chat.Completions.ChatCompletionMessageParam[],
-  ): Promise<Groq.Chat.Completions.ChatCompletionMessage> {
-    if (!Array.isArray(messages) || 
-    messages.length === 0 || 
-    messages.some(
-      (message) =>
-        message.role !== 'user' &&
-        message.role !== 'assistant'
-    )){
+  ): Promise<ChatResponse> {
+    if (
+      !Array.isArray(messages) ||
+      messages.length === 0 ||
+      messages.some(
+        (message) => message.role !== 'user' && message.role !== 'assistant',
+      )
+    ) {
       throw new BadRequestException('Bitte sende mindestens eine Nachricht.');
     }
     let response = await this.groqService.generateText(messages);
 
     let toolRounds = 0;
+    let stations: MapStation[] = [];
 
     //Begrenzung der Tool Aufrufe
     const MAX_TOOL_ROUNDS = 5;
@@ -103,6 +119,9 @@ export class ChatService {
           tool_call_id: toolCall.id,
           content: JSON.stringify(toolResult),
         });
+        if (Array.isArray(toolResult)) {
+          stations = toolResult;
+        }
       }
 
       response = await this.groqService.generateText(messages);
@@ -112,6 +131,10 @@ export class ChatService {
       throw new Error('Maximale Anzahl an Tool-Runden erreicht');
     }
 
-    return response;
+    return {
+      role: 'assistant',
+      content: response.content ?? '',
+      stations,
+    };
   }
 }
