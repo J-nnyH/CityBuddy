@@ -1,4 +1,4 @@
-<h1>CityBuddy &#128690;</h1>
+<!-- <h1 class="underline">CityBuddy &#128690;</h1>
 
 <div class="messages">
   @for (message of messages(); track $index) {
@@ -46,4 +46,82 @@
   >
     {{ isLoading() ? 'Lädt...' : 'Frag CityBuddy' }}
   </button>
+</div> -->
+
+
+<div
+  class="flex min-h-screen flex-col items-center bg-[#f5f7fa] px-5 py-10 font-sans"
+>
+  <h1 class="mb-[30px] text-4xl font-bold text-[#222]">
+    CityBuddy 🚲
+  </h1>
+
+  <div class="mb-5 flex w-full max-w-[700px] flex-col gap-3">
+    @for (message of messages(); track $index) {
+      <div
+        [class]="
+          message.role === 'user'
+            ? 'max-w-[70%] self-end rounded-[20px] rounded-br-[5px] bg-[#222] px-4 py-3 leading-6 break-words text-white'
+            : 'max-w-[70%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 break-words text-[#222]'
+        "
+      >
+        <markdown [data]="message.content"></markdown>
+      </div>
+    }
+
+    @if (isLoading()) {
+      <div
+        class="max-w-[70%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 text-[#222]"
+      >
+        <p class="m-0">
+          Ich prüfe das kurz<span class="dots ml-0.5 inline-flex">
+            <span>.</span>
+            <span>.</span>
+            <span>.</span>
+          </span>
+        </p>
+      </div>
+    }
+  </div>
+
+  @if (stations().length > 0) {
+    <app-map
+      class="mb-5 block w-full max-w-[700px]"
+      [stations]="stations()"
+    ></app-map>
+  }
+
+  <div
+    class="mb-5 flex w-full max-w-[700px] flex-wrap gap-2"
+    aria-label="Fragenvorschläge"
+  >
+    @for (prompt of suggestionPrompts; track prompt) {
+      <button
+        type="button"
+        class="prompt-chip cursor-pointer rounded-full border border-[#d5d9de] bg-white px-3 py-2 text-[0.9rem] text-[#0a274d] transition-colors hover:bg-[#eef4ff] font-medium"
+        (click)="chatRequest(prompt)"
+      >
+        {{ prompt }}
+      </button>
+    }
+  </div>
+
+  <div class="flex w-full max-w-[700px] flex-col gap-3">
+    <textarea
+      #input
+      id="input"
+      class="box-border min-h-20 w-full resize-y rounded-[14px] border border-[#d5d9de] bg-white px-4 py-3.5 text-base outline-none transition-colors focus:border-[#777]"
+      placeholder="Frage nach freien Fahrrädern, freien Plätzen oder Stationen..."
+      (keydown.enter)="$event.preventDefault(); chatRequest(input.value); input.value = ''"
+    ></textarea>
+
+    <button
+      type="button"
+      class="self-end cursor-pointer rounded-lg border border-[#0a274d] bg-white px-[18px] py-2.5 font-semibold text-[#0a274d] transition-all duration-150 hover:bg-[#0a274d] hover:text-white active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+      [disabled]="isLoading()"
+      (click)="chatRequest(input.value); input.value = ''"
+    >
+      {{ isLoading() ? 'Lädt...' : 'Frag CityBuddy' }}
+    </button>
+  </div>
 </div>
