@@ -23,6 +23,7 @@ The project combines a modern Angular frontend, a NestJS backend, and an LLM-pow
 ### Frontend
 
 - Angular
+- Tailwind CSS
 - TypeScript
 - MapLibre GL JS
 - ngx-markdown
