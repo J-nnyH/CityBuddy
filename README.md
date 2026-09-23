@@ -38,7 +38,7 @@ The project combines a modern Angular frontend, a NestJS backend, and an LLM-pow
 ### AI Layer
 
 - Groq API
-- `openai/gpt-oss-20b`
+- `openai/gpt-oss-120b`
 - Tool calling for structured station queries
 
 ## Architecture
@@ -126,6 +126,19 @@ npm run start:frontend
 Station information and current station status are retrieved from the KVB-Rad GBFS feeds provided by Nextbike.
 
 The map uses OpenStreetMap tiles rendered with MapLibre GL JS.
+
+## ⚡ Technical & Architectural Highlights
+
+During the implementation of this MVP, particular attention was paid to robustness, security, and performance:
+
+- **Robust & Defensive Tool Loop (Backend):**  
+  The `ChatService` orchestrates the ReAct-style tool-calling loop with strict execution limits (max. 5 rounds and 10 tool-calls per round) to prevent endless execution. LLM tool-call arguments are handled defensively using `try-catch`, with parsing errors fed back into the conversation context so the model can retry with corrected arguments.
+
+- **Performance with `@defer` & Signals (Frontend):**  
+  Angular Signals are used for reactive state management. The MapLibre GL map is lazily loaded using Angular's `@defer` control flow once station data is available, reducing the amount of work required during the initial page load.
+
+- **Security & Resource Management (Map):**  
+  Map popups are constructed using native DOM methods such as `document.createElement` and `textContent` instead of `innerHTML`, preventing station names from being interpreted as HTML. The MapLibre instance is explicitly destroyed during `OnDestroy` to prevent unnecessary resource usage and potential memory leaks.
 
 ## Future improvements
 

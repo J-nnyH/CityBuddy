@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   Input,
+  OnDestroy,
   OnChanges,
   SimpleChanges,
   ViewChild,
@@ -13,9 +14,8 @@ import { MapStation } from '../types/chat-message';
 @Component({
   selector: 'app-map',
   templateUrl: './map.html',
-  styleUrl: './map.css',
 })
-export class MapComponent implements AfterViewInit, OnChanges {
+export class MapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
 
   @Input() stations: MapStation[] = [];
@@ -73,15 +73,21 @@ export class MapComponent implements AfterViewInit, OnChanges {
     this.markers = [];
 
     this.stations.forEach((station) => {
+      // Stationsdaten als Text statt als HTML einsetzen, damit nichts ungeprüft gerendert wird.
+      const popupContent = document.createElement('div');
+      const title = document.createElement('strong');
+      const bikes = document.createElement('div');
+      const docks = document.createElement('div');
+
+      title.textContent = station.name;
+      bikes.textContent = `Fahrräder: ${station.bikesAvailable}`;
+      docks.textContent = `Freie Plätze: ${station.docksAvailable}`;
+
+      popupContent.append(title, bikes, docks);
+
       const marker = new Marker({ color: '#2563eb' })
         .setLngLat([station.longitude, station.latitude])
-        .setPopup(
-          new Popup().setHTML(`
-            <strong>${station.name}</strong><br>
-            Fahrräder: ${station.bikesAvailable}<br>
-            Freie Plätze: ${station.docksAvailable}
-          `),
-        )
+        .setPopup(new Popup().setDOMContent(popupContent))
         .addTo(this.map!);
       marker.getElement().addEventListener('click', () => {
         this.map?.flyTo({
@@ -91,6 +97,24 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
       this.markers.push(marker);
     });
+
+    if (this.stations.length === 1) {
+      const station = this.stations[0];
+
+      this.map.flyTo({
+        center: [station.longitude, station.latitude],
+        zoom: 10,
+      });
+
+      this.markers[0]?.togglePopup();
+    }
+  }
+
+  // Map aufräumen, damit sie nach dem Verlassen der Komponente keine Ressourcen mehr hält
+  ngOnDestroy(): void {
+    this.markers = [];
+    this.map?.remove();
+    this.map = undefined;
   }
 }
 class GeolocationControl {

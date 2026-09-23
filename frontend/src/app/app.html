@@ -1,127 +1,151 @@
-<!-- <h1 class="underline">CityBuddy &#128690;</h1>
-
-<div class="messages">
-  @for (message of messages(); track $index) {
-    <div [class]="message.role">
-      <markdown [data]="message.content"></markdown>
-    </div>
-  }
-  @if (isLoading()) {
-    <div class="assistant">
-      <p>
-        Ich prüfe das kurz<span class="dots">
-          <span>.</span>
-          <span>.</span>
-          <span>.</span>
-        </span>
-      </p>
-    </div>
-  }
-</div>
-
-@if (stations().length > 0) {
-  <app-map [stations]="stations()"></app-map>
-}
-
-<div class="prompt-suggestions" aria-label="Fragenvorschläge">
-  @for (prompt of suggestionPrompts; track prompt) {
-    <button type="button" class="prompt-chip" (click)="chatRequest(prompt)">
-      {{ prompt }}
-    </button>
-  }
-</div>
-
-<div class="composer">
-  <textarea
-    #input
-    id="input"
-    placeholder="Frage nach freien Fahrrädern, freien Plätzen oder Stationen..."
-    (keydown.enter)="$event.preventDefault(); chatRequest(input.value); input.value = ''"
-  ></textarea>
-
-  <button
-    type="button"
-    [disabled]="isLoading()"
-    (click)="chatRequest(input.value); input.value = ''"
-  >
-    {{ isLoading() ? 'Lädt...' : 'Frag CityBuddy' }}
-  </button>
-</div> -->
-
-
 <div
-  class="flex min-h-screen flex-col items-center bg-[#f5f7fa] px-5 py-10 font-sans"
+  class="flex min-h-screen flex-col items-center bg-[#f5f7fa] pt-12 pb-10 font-sans min-[425px]:px-3 md:px-5"
 >
-  <h1 class="mb-[30px] text-4xl font-bold text-[#222]">
-    CityBuddy 🚲
-  </h1>
+  @if (messages().length === 0) {
+    <!-- Startansicht -->
+    <div class="flex flex-1 items-center justify-center px-5">
+      <div class="flex w-full max-w-[700px] -translate-y-6 flex-col items-center">
+        <h1 class="text-center text-4xl font-bold tracking-tight text-[#222]">CityBuddy 🚲</h1>
 
-  <div class="mb-5 flex w-full max-w-[700px] flex-col gap-3">
-    @for (message of messages(); track $index) {
-      <div
-        [class]="
-          message.role === 'user'
-            ? 'max-w-[70%] self-end rounded-[20px] rounded-br-[5px] bg-[#222] px-4 py-3 leading-6 break-words text-white'
-            : 'max-w-[70%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 break-words text-[#222]'
-        "
-      >
-        <markdown [data]="message.content"></markdown>
-      </div>
-    }
-
-    @if (isLoading()) {
-      <div
-        class="max-w-[70%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 text-[#222]"
-      >
-        <p class="m-0">
-          Ich prüfe das kurz<span class="dots ml-0.5 inline-flex">
-            <span>.</span>
-            <span>.</span>
-            <span>.</span>
-          </span>
+        <p class="mt-3 text-center text-base text-[#6b7280]">
+          Dein smarter Begleiter für KVB-Rad in Köln.
         </p>
+
+        <h2 class="mt-8 text-center text-xl font-semibold text-[#222]">
+          Was kann ich für dich tun?
+        </h2>
+
+        <textarea
+          #input
+          rows="1"
+          class="mt-5 max-h-50 min-h-12 w-full resize-none overflow-hidden rounded-[26px] border border-[#d5d9de] bg-white px-[12px] py-[9px] leading-[16px] text-base outline-none shadow-[-1px_30px_16px_8px_#f5f7fab3] transition-colors focus:border-[#777] md:px-4 md:leading-normal md:py-3"
+          placeholder="Frage nach freien Fahrrädern, freien Plätzen oder Stationen..."
+          (input)="autoResize(input)"
+          (keydown.enter)="handleEnter($event, input)"
+        ></textarea>
+
+        <div class="mt-4 flex flex-wrap justify-center gap-2" aria-label="Fragenvorschläge">
+          @for (prompt of suggestionPrompts; track prompt) {
+            <button
+              type="button"
+              class="prompt-chip cursor-pointer rounded-full border border-[#d5d9de] bg-white px-3 py-2 text-[0.9rem] text-[#0a274d] transition-colors hover:bg-[#eef4ff]"
+              (click)="chatRequest(prompt)"
+            >
+              {{ prompt }}
+            </button>
+          }
+        </div>
       </div>
-    }
-  </div>
-
-  @if (stations().length > 0) {
-    <app-map
-      class="mb-5 block w-full max-w-[700px]"
-      [stations]="stations()"
-    ></app-map>
-  }
-
-  <div
-    class="mb-5 flex w-full max-w-[700px] flex-wrap gap-2"
-    aria-label="Fragenvorschläge"
-  >
-    @for (prompt of suggestionPrompts; track prompt) {
-      <button
-        type="button"
-        class="prompt-chip cursor-pointer rounded-full border border-[#d5d9de] bg-white px-3 py-2 text-[0.9rem] text-[#0a274d] transition-colors hover:bg-[#eef4ff] font-medium"
-        (click)="chatRequest(prompt)"
-      >
-        {{ prompt }}
-      </button>
-    }
-  </div>
-
-  <div class="flex w-full max-w-[700px] flex-col gap-3">
-    <textarea
-      #input
-      id="input"
-      class="box-border min-h-20 w-full resize-y rounded-[14px] border border-[#d5d9de] bg-white px-4 py-3.5 text-base outline-none transition-colors focus:border-[#777]"
-      placeholder="Frage nach freien Fahrrädern, freien Plätzen oder Stationen..."
-      (keydown.enter)="$event.preventDefault(); chatRequest(input.value); input.value = ''"
-    ></textarea>
-
-    <button
-      type="button"
-      class="self-end cursor-pointer rounded-lg border border-[#0a274d] bg-white px-[18px] py-2.5 font-semibold text-[#0a274d] transition-all duration-150 hover:bg-[#0a274d] hover:text-white active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
-      [disabled]="isLoading()"
-      (click)="chatRequest(input.value); input.value = ''"
+    </div>
+  } @else {
+    <!-- Normaler Chat -->
+    <!-- Mobile Header -->
+    <div
+      [class]="
+        isScrolled()
+          ? 'fixed left-0 top-0 z-20 w-full border-b border-[#d5d9de] bg-[#f6f7fa] px-4 py-1 lg:hidden'
+          : 'fixed left-0 top-0 z-20 w-full bg-[#f5f7fa] px-4 py-2 lg:hidden'
+      "
     >
-      {{ isLoading() ? 'Lädt...' : 'Frag CityBuddy' }}
-    </button>
-  </div>
+      <h1
+        [class]="
+          isScrolled()
+            ? 'cursor-pointer text-lg font-bold text-[#222] transition-all duration-200'
+            : 'cursor-pointer text-xl font-bold text-[#222] transition-all duration-200'
+        "
+        (click)="reloadPage()"
+      >
+        CityBuddy 🚲
+      </h1>
+    </div>
+
+    <!-- Desktop H1 -->
+    <h1
+      class="fixed left-5 top-5 z-20 hidden cursor-pointer text-left text-2xl font-bold text-[#222] lg:block"
+      (click)="reloadPage()"
+    >
+      CityBuddy 🚲
+    </h1>
+
+    <div class="flex-1 overflow-y-auto px-3 md:px-5 max-[320px]:px-2">
+      <div class="mx-auto flex w-full max-w-[700px] flex-col gap-3 pb-12">
+        @for (message of messages(); track $index) {
+          <div
+            #messageElement
+            [class]="
+              message.role === 'user'
+                ? 'max-w-[70%] self-end rounded-[20px] rounded-br-[5px] bg-[#222] px-4 py-3 leading-6 break-words text-white'
+                : 'max-w-[100%] min-[520px]:max-w-[90%] min-[650px]:max-w-[70%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 break-words text-[#222]'
+            "
+          >
+            <markdown [data]="message.content"></markdown>
+          </div>
+        }
+
+        @if (isLoading()) {
+          <div
+            class="max-w-[80%] self-start rounded-[20px] rounded-bl-none border border-[#e1e4e8] bg-white px-4 py-3 leading-6 text-[#222]"
+          >
+            <p class="m-0">
+              Ich prüfe das kurz<span class="dots ml-0.5 inline-flex">
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+              </span>
+            </p>
+          </div>
+        }
+
+        <!-- initual loading reduzieren durch defer loading von map -->
+        @defer (when stations().length > 0) {
+          <app-map class="mb-5 block w-full" [stations]="stations()"></app-map>
+        }
+
+        <div class="flex flex-wrap gap-2" aria-label="Fragenvorschläge">
+          @for (prompt of suggestionPrompts; track prompt) {
+            <button
+              type="button"
+              class="prompt-chip cursor-pointer rounded-full border border-[#d5d9de] bg-white px-3 py-2 text-[0.9rem] text-[#0a274d] transition-colors hover:bg-[#eef4ff]"
+              (click)="chatRequest(prompt)"
+            >
+              {{ prompt }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Fixierter Input -->
+    <div
+      class="fixed bottom-0 left-0 z-10 w-full bg-gradient-to-t from-[#f5f7fa]/90 via-[#f5f7fa]/0 via-50% to-transparent px-3 pb-[15px] min-[425px]:px-6 md:px-5 md:pb-6 max-[320px]:px-2"
+    >
+      <div class="mx-auto flex w-full max-w-[700px] items-end gap-2 max-[320px]:gap-1">
+        <textarea
+          #input
+          rows="1"
+          class="max-h-50 min-h-12 flex-1 resize-none overflow-hidden rounded-[28px] border border-[#d5d9de] bg-white px-[12px] py-[9px] text-[15px] leading-[16px] text-[#222] outline-none shadow-md transition-all duration-150 placeholder:text-[#8a9097] focus:border-[#aeb4bb] min-[375px]:text-base md:px-4 md:leading-normal md:py-3"
+          placeholder="Frage nach freien Fahrrädern, freien Plätzen oder Stationen..."
+          (input)="autoResize(input)"
+          (keydown.enter)="handleEnter($event, input)"
+        ></textarea>
+
+        <button
+          type="button"
+          class="flex h-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-[#0a274d] bg-white px-[18px] font-semibold text-[#0a274d] transition-all duration-150 hover:bg-[#0a274d] hover:text-white active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+          [disabled]="isLoading()"
+          (click)="sendFromInput(input)"
+        >
+          @if (isLoading()) {
+            <span
+              class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-[#d5d9de] border-t-[#0a274d] md:hidden"
+            ></span>
+            <span class="hidden md:inline">Lädt...</span>
+          } @else {
+            <span class="md:hidden">➤</span>
+            <span class="hidden md:inline">Senden ➤</span>
+          }
+        </button>
+      </div>
+    </div>
+  }
 </div>
