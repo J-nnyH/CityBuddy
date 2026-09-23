@@ -43,6 +43,10 @@ The project combines a modern Angular frontend, a NestJS backend, and an LLM-pow
 
 ## Architecture
 
+<p align="center">
+  <img src="assets/architecture.webp" alt="CityBuddy Architecture" width="900" />
+</p>
+
 The frontend sends the user conversation to the backend API.
 
 The backend passes the conversation and available tools to the LLM. Depending on the request, the model decides which station query tool to use. The backend then calls the appropriate GBFS-based service, retrieves the current station data, and returns both the structured result and the final AI-generated answer.
@@ -121,13 +125,21 @@ npm run start:backend
 npm run start:frontend
 ```
 
+## Demo
+<p align="center">
+  <img src="assets/demo1.gif" alt="CityBuddy Demo" width="800" />
+  <img src="assets/demo2.gif" alt="CityBuddy Demo" width="800" />
+<p>
+
+This short demo shows the main user flow: the user asks for relevant bike or docking information, the backend calls the appropriate station tool, and the result is displayed directly together with the matching stations on the map.
+
 ## Data source
 
 Station information and current station status are retrieved from the KVB-Rad GBFS feeds provided by Nextbike.
 
 The map uses OpenStreetMap tiles rendered with MapLibre GL JS.
 
-## ⚡ Technical & Architectural Highlights
+## Technical & Architectural Highlights
 
 During the implementation of this MVP, particular attention was paid to robustness, security, and performance:
 
