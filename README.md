@@ -1,6 +1,6 @@
 # CityBuddy 🚲
 
-CityBuddy is a full-stack MVP that helps users ask natural-language questions about real-time bike availability in Cologne. Instead of manually checking a station list, users can simply ask things like “Which stations have at least 5 bikes?” or "Where stations have free docks?" and receive a direct answer together with the relevant stations on a map.
+CityBuddy is a full-stack MVP that helps users ask natural-language questions about real-time bike availability in Cologne. Instead of manually checking a station list, users can simply ask things like “Which stations have at least 5 bikes?” or "Which stations have free docks?" and receive a direct answer together with the relevant stations on a map.
 
 The project combines a modern Angular frontend, a NestJS backend, and an LLM-powered tool-calling flow. It fetches live data from the KVB-Rad GBFS feed, filters the stations based on the user’s request, and presents the result in a clean chat interface.
 
