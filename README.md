@@ -154,7 +154,15 @@ During the implementation of this MVP, particular attention was paid to robustne
 
 ## Future improvements
 
-- add station clustering on the map
-- Improve nearby-station suggestions
-- Improve mobile layout and accessibility
-- add deployment setup
+### Functionality
+- **Location-based queries:** Allow users to ask for stations near their current location and calculate distances in the backend.
+- **District-based queries:** Add geofencing to support queries for specific Cologne districts.
+- **Station clustering:** Cluster nearby station markers on the map to improve readability at lower zoom levels.
+
+### Performance & UX
+- **Short-TTL caching:** Cache GBFS data for a short period to reduce load on the external API under higher traffic.
+- **Text streaming:** Stream LLM responses via SSE for a more responsive chat experience.
+- **Mobile & accessibility improvements:** Further improve the responsive layout and accessibility.
+
+### Deployment
+- **Deployment setup:** Add a production deployment configuration for frontend and backend.
