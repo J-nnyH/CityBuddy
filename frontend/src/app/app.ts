@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  OnInit,
   QueryList,
   ViewChildren,
   inject,
@@ -8,6 +9,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { ChatService } from './chat.service';
+import { HealthService } from './health.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { ChatMessage, MapStation } from './types/chat-message';
 import { MapComponent } from './map/map';
@@ -18,8 +20,9 @@ import { MapComponent } from './map/map';
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
+export class App implements OnInit {
   private readonly chatService = inject(ChatService);
+  private readonly healthService = inject(HealthService);
 
   isScrolled = signal(false);
 
@@ -42,6 +45,13 @@ export class App {
   stations = signal<MapStation[]>([]);
 
   suggestionPrompts: string[] = [];
+
+    // Wake up the backend if it is sleeping.
+  ngOnInit(): void {
+    this.healthService.checkHealth().subscribe({
+      error: () => undefined,
+    });
+  }
 
   constructor() {
     const stations = ['Butzweiler Hof', 'Fühlinger See', 'Friesenplatz', 'Brüsseler Platz'];

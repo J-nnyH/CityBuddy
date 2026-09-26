@@ -163,6 +163,3 @@ During the implementation of this MVP, particular attention was paid to robustne
 - **Short-TTL caching:** Cache GBFS data for a short period to reduce load on the external API under higher traffic.
 - **Text streaming:** Stream LLM responses via SSE for a more responsive chat experience.
 - **Mobile & accessibility improvements:** Further improve the responsive layout and accessibility.
-
-### Deployment
-- **Deployment setup:** Add a production deployment configuration for frontend and backend.
